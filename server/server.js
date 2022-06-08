@@ -67,6 +67,27 @@ app.get('/reviews', (req, res) => {
   });
 })
 
+// UPDATE REVIEW
+app.put('/update/review', (req, res) => {
+  const id = req.body.id;
+  const text = req.body.text;
+  const query = "UPDATE review SET text = ? WHERE id = ?"
+
+  db.query(query, [text, id], (err, result) => {
+    console.log(id + text);
+  })
+})
+
+// DELETE REVIEW
+app.get('/delete/review/:reviewId', (req, res) => {
+  const reviewId = req.params.reviewId;
+
+  const query = "DELETE FROM review WHERE id = ?";
+  db.query(query, reviewId, (err, result) => {
+    console.log(err);
+  })
+})
+
 app.get('/', (req, res) => {
   res.send('server running, go to localhost:3000 for application')
 })

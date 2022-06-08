@@ -8,6 +8,7 @@ const url = 'http://localhost:3001';
 const App = () => {
   const [movie, setMovie] = useState('');
   const [review, setReview] = useState('');
+  const [updatedReview, setUpdatedReview] = useState('');
   const [moviesView, setMoviesView] = useState([]);
   const [reviewsView, setReviewsView] = useState([]);
 
@@ -18,8 +19,9 @@ const App = () => {
 
   // MOVIES
   const createMovie = () => {
+    if (!movie) return;
     axios.post(`${url}/create/movie`, { movie })
-    readMovies()
+    window.location.reload() // foi mal rafa, nao tava dando certo do outro jeito e to sem tempo :(
   }
 
   const readMovies = () => {
@@ -30,13 +32,14 @@ const App = () => {
 
   const deleteMovie = (movieId) => {
     axios.get(`${url}/delete/movie/${movieId}`)
-    readMovies();
+    window.location.reload() // foi mal rafa, nao tava dando certo do outro jeito e to sem tempo :(
   }
 
   // REVIEWS
   const createReview = (movie) => {
+    if (!review) return;
     axios.post(`${url}/create/review`, { text: review, movieName: movie })
-    readMovies()
+    window.location.reload() // foi mal rafa, nao tava dando certo do outro jeito e to sem tempo :(
   }
 
   const readReviews = () => {
@@ -45,12 +48,17 @@ const App = () => {
     })
   }
 
-  const updateReview = () => {
-    //todo
+  const updateReview = (reviewId) => {
+    axios.put(`${url}/update/review`, {
+      id: reviewId,
+      text: updatedReview
+    })
+    window.location.reload() // foi mal rafa, nao tava dando certo do outro jeito e to sem tempo :(
   }
 
-  const deleteReview = () => {
-    // todo
+  const deleteReview = (reviewId) => {
+    axios.get(`${url}/delete/review/${reviewId}`)
+    window.location.reload() // foi mal rafa, nao tava dando certo do outro jeito e to sem tempo :(
   }
 
   return (
@@ -67,12 +75,21 @@ const App = () => {
           return (
             <div className="movie-container">
               <h2>{movie.name}</h2>
-              <Input type="text" placeholder="review" value={review} onChange={e => setReview(e.target.value)} />
-              <Button onClick={() => createReview(movie.name)} btnText="Publicar Review" />
               <Button onClick={() => deleteMovie(movie.id)} btnText="Deletar filme" />
-              {reviewsView.map(review => {
-                return <p>{review.text}</p>
-              })}
+              <Input type="text" placeholder="review" onChange={e => setReview(e.target.value)} />
+              <Button onClick={() => createReview(movie.name)} btnText="Publicar Review" />
+
+              {
+                reviewsView.map(review => {
+                  if (review.movieName === movie.name) return (
+                    <div>
+                      <p>{review.text}</p>
+                      <input type="text" placeholder="editar" onChange={e => setUpdatedReview(e.target.value)} />
+                      <button onClick={() => updateReview(review.id)}> editar review</button>
+                      <button onClick={() => deleteReview(review.id)}> deletar review</button>
+                    </div>
+                  );
+                })}
             </div>
           )
         })}
